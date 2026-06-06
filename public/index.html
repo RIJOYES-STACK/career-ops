@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career-Ops Web Dashboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Marked.js for Markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">💼</div>
+        <div class="logo-text">
+          <h1>Career-Ops</h1>
+          <span>Job Search Control</span>
+        </div>
+      </div>
+      
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="overview">
+          <span class="icon">📊</span> Overview
+        </button>
+        <button class="nav-item" data-tab="tracker">
+          <span class="icon">📋</span> Job Tracker
+        </button>
+        <button class="nav-item" data-tab="pipeline">
+          <span class="icon">📥</span> Job Inbox (Pipeline)
+        </button>
+        <button class="nav-item" data-tab="cv">
+          <span class="icon">📝</span> Edit CV (cv.md)
+        </button>
+        <button class="nav-item" data-tab="profile">
+          <span class="icon">⚙️</span> Profile Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="connection-status">
+          <span class="status-dot online"></span> Local Server Connected
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <div class="page-title">
+          <h2 id="current-tab-title">Dashboard Overview</h2>
+          <p id="current-tab-subtitle">Summary of your current job search progress</p>
+        </div>
+        <div class="action-buttons">
+          <button id="btn-trigger-scan" class="btn btn-primary">
+            <span>🔍</span> Scan Portals
+          </button>
+          <button id="btn-eval-custom" class="btn btn-secondary">
+            <span>➕</span> Evaluate URL / Text
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Views -->
+      <div class="view-container">
+
+        <!-- ── TAB: OVERVIEW ── -->
+        <section id="tab-overview" class="tab-view active">
+          <!-- Metrics Ribbon -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon">📂</div>
+              <div class="metric-info">
+                <h3>Total Evaluated</h3>
+                <p id="stat-total-eval">0</p>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">🚀</div>
+              <div class="metric-info">
+                <h3>Applied</h3>
+                <p id="stat-total-applied">0</p>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">⭐</div>
+              <div class="metric-info">
+                <h3>Average Score</h3>
+                <p id="stat-avg-score">0.0</p>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">📬</div>
+              <div class="metric-info">
+                <h3>Inbox Pending</h3>
+                <p id="stat-total-pending">0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Charts / Summaries -->
+          <div class="dashboard-widgets">
+            <div class="widget-card flex-2">
+              <div class="card-header">
+                <h4>Top Match Recommendations (Score >= 4.0)</h4>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table" id="top-matches-table">
+                    <thead>
+                      <tr>
+                        <th>Company</th>
+                        <th>Role</th>
+                        <th>Score</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="top-matches-list">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="widget-card flex-1">
+              <div class="card-header">
+                <h4>Status Funnel</h4>
+              </div>
+              <div class="card-body funnel-container" id="funnel-stats">
+                <!-- Status counts rendered dynamically -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── TAB: TRACKER ── -->
+        <section id="tab-tracker" class="tab-view">
+          <div class="table-controls">
+            <input type="text" id="tracker-search" class="form-input" placeholder="Search by company or role...">
+            <select id="tracker-filter-status" class="form-select">
+              <option value="all">All Statuses</option>
+              <option value="evaluated">Evaluated</option>
+              <option value="applied">Applied</option>
+              <option value="responded">Responded</option>
+              <option value="interview">Interview</option>
+              <option value="offer">Offer</option>
+              <option value="rejected">Rejected</option>
+              <option value="discarded">Discarded</option>
+              <option value="skip">Skip</option>
+            </select>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table" id="tracker-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Company</th>
+                  <th>Role</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                  <th>PDF</th>
+                  <th>Report</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="tracker-list">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ── TAB: PIPELINE (INBOX) ── -->
+        <section id="tab-pipeline" class="tab-view">
+          <div class="pipeline-tabs">
+            <button class="sub-tab-btn active" data-subtab="pending">Pending Inbox</button>
+            <button class="sub-tab-btn" data-subtab="processed">Processed History</button>
+          </div>
+
+          <div id="subtab-pending" class="sub-tab-view active">
+            <div class="table-responsive">
+              <table class="table" id="pipeline-pending-table">
+                <thead>
+                  <tr>
+                    <th>Company</th>
+                    <th>Role</th>
+                    <th>Source URL</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="pipeline-pending-list">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="subtab-processed" class="sub-tab-view">
+            <div class="table-responsive">
+              <table class="table" id="pipeline-processed-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Company</th>
+                    <th>Role</th>
+                    <th>Score</th>
+                    <th>PDF</th>
+                    <th>Job Link</th>
+                  </tr>
+                </thead>
+                <tbody id="pipeline-processed-list">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── TAB: EDIT CV ── -->
+        <section id="tab-cv" class="tab-view">
+          <div class="editor-container">
+            <div class="editor-header">
+              <span>Editing: cv.md</span>
+              <button id="btn-save-cv" class="btn btn-success">Save Changes</button>
+            </div>
+            <textarea id="cv-editor-textarea" class="editor-textarea" spellcheck="false"></textarea>
+          </div>
+        </section>
+
+        <!-- ── TAB: PROFILE SETTINGS ── -->
+        <section id="tab-profile" class="tab-view">
+          <div class="editor-container">
+            <div class="editor-header">
+              <span>Editing: config/profile.yml</span>
+              <button id="btn-save-profile" class="btn btn-success">Save Configuration</button>
+            </div>
+            <textarea id="profile-editor-textarea" class="editor-textarea" spellcheck="false"></textarea>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Live Terminal / Console Panel -->
+      <footer class="console-panel">
+        <div class="console-header">
+          <div class="console-title">
+            <span class="pulse-dot idle" id="console-status-dot"></span>
+            Terminal Console Outputs
+          </div>
+          <div class="console-controls">
+            <button id="btn-clear-console" class="btn-icon" title="Clear console">🧹</button>
+            <button id="btn-toggle-console" class="btn-icon" title="Minimize/Maximize console">🗕</button>
+          </div>
+        </div>
+        <div class="console-body" id="console-output">
+          Ready. Trigger "Scan Portals" or "Evaluate" to watch terminal activity here...
+        </div>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- ── MODAL: EVALUATE URL/TEXT ── -->
+  <div class="modal-overlay" id="modal-eval-custom">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Evaluate Custom Job</h3>
+        <button class="modal-close" id="modal-eval-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="eval-url-input">Job Description URL (Ashby, Greenhouse, Lever, etc.)</label>
+          <input type="text" id="eval-url-input" class="form-input" placeholder="https://jobs.lever.co/company/job-id">
+        </div>
+        <div class="form-divider">OR</div>
+        <div class="form-group">
+          <label for="eval-text-input">Job Description Text (Paste directly)</label>
+          <textarea id="eval-text-input" class="form-textarea" placeholder="Paste the job description requirements here..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-eval-cancel">Cancel</button>
+        <button class="btn btn-primary" id="modal-eval-submit">Run Evaluation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: REPORT VIEWER ── -->
+  <div class="modal-overlay" id="modal-report-viewer">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h3 id="report-viewer-title">Job Evaluation Report</h3>
+        <button class="modal-close" id="modal-report-close">&times;</button>
+      </div>
+      <div class="modal-body markdown-body" id="report-viewer-content">
+        <!-- Rendered markdown goes here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- App Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>
